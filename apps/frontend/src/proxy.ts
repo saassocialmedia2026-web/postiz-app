@@ -48,6 +48,8 @@ export async function proxy(request: NextRequest) {
     nextUrl.pathname.startsWith('/p/') ||
     nextUrl.pathname.startsWith('/provider/') ||
     nextUrl.pathname.startsWith('/icons/') ||
+    (nextUrl.pathname === '/' && !nextUrl.searchParams.get('org')) ||
+    nextUrl.pathname === '/contact' ||
     nextUrl.pathname === '/privacy-policy' ||
     nextUrl.pathname === '/terms-of-service'
   ) {
@@ -107,9 +109,9 @@ export async function proxy(request: NextRequest) {
     );
   }
 
-  // If the url is /auth and the cookie exists, redirect to /
+  // Authenticated users entering auth pages continue to the calendar.
   if (nextUrl.pathname.startsWith('/auth') && authCookie) {
-    return NextResponse.redirect(new URL(`/${url}`, nextUrl.href));
+    return NextResponse.redirect(new URL(`/launches${url}`, nextUrl.href));
   }
   if (nextUrl.pathname.startsWith('/auth') && !authCookie) {
     if (org) {
